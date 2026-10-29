@@ -8,6 +8,8 @@ from dataclasses import dataclass
 class TestCaseDefinition:
     """Describe one test case configured by an instructor."""
 
+    __test__ = False
+
     test_case_id: str
     description: str
     points: int
