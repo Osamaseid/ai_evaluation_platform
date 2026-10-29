@@ -9,6 +9,8 @@ from evaluator.assignment import AssignmentDefinition
 class TestCaseResult:
     """Represent the outcome of one executed test case."""
 
+    __test__ = False
+
     test_case_id: str
     passed: bool
 
