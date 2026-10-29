@@ -1,4 +1,3 @@
-
 """Validation for programming submission metadata."""
 
 import re
