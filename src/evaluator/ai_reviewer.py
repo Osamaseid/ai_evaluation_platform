@@ -100,5 +100,6 @@ class GeminiCodeReviewer:
             raise
         except Exception as exc:
             raise GeminiReviewError(
-                "Gemini code review request failed."
+                f"Gemini code review request failed: "
+                f"{type(exc).__name__}: {exc}"
             ) from exc

@@ -1,4 +1,12 @@
-from evaluator.ai_reviewer import GeminiCodeReviewer
+"""Quick demo: send student code to Gemini for review."""
+
+from dotenv import load_dotenv
+
+from evaluator.ai_reviewer import GeminiCodeReviewer, GeminiReviewError
+
+# Load .env so GEMINI_API_KEY and GEMINI_MODEL are available
+# to GeminiCodeReviewer via os.getenv().
+load_dotenv()
 
 
 student_code = """
@@ -19,8 +27,7 @@ try:
     print(feedback)
     print("\n========================================")
 
-except Exception as exc:
-    raise GeminiReviewError(
-        f"Gemini code review request failed: "
-        f"{type(exc).__name__}: {exc}"
-    ) from exc
+except GeminiReviewError as exc:
+    print(f"\nReview failed: {exc}")
+    if exc.__cause__:
+        print(f"Underlying error: {type(exc.__cause__).__name__}: {exc.__cause__}")
