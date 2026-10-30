@@ -19,5 +19,8 @@ try:
     print(feedback)
     print("\n========================================")
 
-except Exception as error:
-    print(f"Review failed: {error}")
+except Exception as exc:
+    raise GeminiReviewError(
+        f"Gemini code review request failed: "
+        f"{type(exc).__name__}: {exc}"
+    ) from exc
