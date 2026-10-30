@@ -1,4 +1,3 @@
-
 from evaluator.ai_reviewer import GeminiCodeReviewer
 
 
@@ -22,4 +21,3 @@ try:
 
 except Exception as error:
     print(f"Review failed: {error}")
-g
