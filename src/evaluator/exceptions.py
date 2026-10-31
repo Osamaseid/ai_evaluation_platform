@@ -24,3 +24,39 @@ class InvalidStateTransitionError(DomainError):
 class DeadlineExceededError(DomainError):
     """Raised when a submission is received after the assignment deadline."""
 
+
+# ---------------------------------------------------------------------------
+# Source Collection & Security Exceptions
+# ---------------------------------------------------------------------------
+
+
+class CollectionError(DomainError):
+    """Raised when source code collection or extraction fails."""
+
+
+class RepositoryNotFoundError(CollectionError):
+    """Raised when a GitHub repository is not found or is private/inaccessible."""
+
+
+class RepositoryAccessError(CollectionError):
+    """Raised when GitHub authorization fails or API rate limit is exceeded."""
+
+
+class SecurityValidationError(DomainError):
+    """Base exception for security policy violations in submissions."""
+
+
+class DangerousFileTypeError(SecurityValidationError):
+    """Raised when a submission contains a disallowed or dangerous file type."""
+
+
+class PathTraversalError(SecurityValidationError):
+    """Raised when an archive entry or storage path attempts directory traversal."""
+
+
+class ZipBombError(SecurityValidationError):
+    """Raised when a zip archive shows characteristics of a decompression bomb."""
+
+
+class FileSizeExceededError(SecurityValidationError):
+    """Raised when a file or extracted archive exceeds configured size limits."""

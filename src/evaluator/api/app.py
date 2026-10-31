@@ -2,7 +2,7 @@
 
 from fastapi import FastAPI
 
-from evaluator.api.routers import assignments
+from evaluator.api.routers import assignments, submissions
 
 
 def create_app() -> FastAPI:
@@ -14,6 +14,7 @@ def create_app() -> FastAPI:
     )
 
     app.include_router(assignments.router)
+    app.include_router(submissions.router)
 
     @app.get("/health", tags=["system"])
     def health_check() -> dict:

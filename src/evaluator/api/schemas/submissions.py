@@ -6,6 +6,21 @@ from pydantic import BaseModel, Field
 from evaluator.submission import SubmissionSource, SubmissionStatus
 
 
+class GitHubSubmissionRequest(BaseModel):
+    """Payload to submit a GitHub repository for evaluation."""
+
+    student_id: str = Field(..., min_length=1, max_length=50, pattern=r"^[A-Za-z0-9_-]+$")
+    task_id: str = Field(..., min_length=1, max_length=50, pattern=r"^[A-Za-z0-9_-]+$")
+    github_url: str = Field(
+        ...,
+        min_length=1,
+        max_length=2048,
+        description="Public or private GitHub repository URL",
+        examples=["https://github.com/student/homework1"],
+    )
+    branch: str = Field(default="main", max_length=100)
+
+
 class CreateSubmissionRequest(BaseModel):
     """Payload to submit student work for evaluation."""
 
@@ -43,4 +58,3 @@ class SubmissionStatusResponse(BaseModel):
     history: list[tuple[str, datetime]]
 
     model_config = {"from_attributes": True}
-

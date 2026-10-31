@@ -29,6 +29,7 @@ from evaluator.orchestration.models import (
     WorkflowStep,
 )
 from evaluator.runner import Runner
+from evaluator.storage.submission_storage import SubmissionStorage
 from evaluator.stores.assignment_store import AssignmentStore
 from evaluator.stores.evaluation_store import EvaluationStore
 from evaluator.stores.submission_store import SubmissionStore
@@ -47,6 +48,8 @@ class EvaluationOrchestrator:
         evaluation_store: EvaluationStore,
         runner: Runner,
         ai_reviewer: Any | None = None,
+        storage: SubmissionStorage | None = None,
+        github_token: str | None = None,
         max_retries: int = 2,
         retry_delay_seconds: float = 0.5,
     ) -> None:
@@ -55,6 +58,8 @@ class EvaluationOrchestrator:
         self._evaluation_store = evaluation_store
         self._runner = runner
         self._ai_reviewer = ai_reviewer
+        self._storage = storage
+        self._github_token = github_token
         self._max_retries = max(1, max_retries)
         self._retry_delay_seconds = max(0.0, retry_delay_seconds)
 
@@ -133,6 +138,19 @@ class EvaluationOrchestrator:
                     bundle = self._collect_github_source_with_retry(
                         submission.source_reference
                     )
+                    source_code = bundle.get_concatenated_source()
+                    submission = submission.with_source_code(source_code)
+                    self._submission_store.update(submission)
+                elif (
+                    submission.source_type is SubmissionSource.FILE_UPLOAD
+                    and self._storage is not None
+                    and submission.source_reference.startswith("storage://")
+                ):
+                    raw_bytes = self._storage.load_upload(submission.source_reference)
+                    if submission.source_reference.endswith(".zip"):
+                        bundle = SourceCollector.from_zip_bytes(raw_bytes)
+                    else:
+                        bundle = SourceCollector.from_single_file(raw_bytes)
                     source_code = bundle.get_concatenated_source()
                     submission = submission.with_source_code(source_code)
                     self._submission_store.update(submission)
@@ -392,7 +410,10 @@ class EvaluationOrchestrator:
         last_exc: Exception | None = None
         for attempt in range(1, self._max_retries + 1):
             try:
-                return SourceCollector.from_github(source_reference)
+                return SourceCollector.from_github(
+                    source_reference,
+                    token=self._github_token,
+                )
             except Exception as exc:
                 last_exc = exc
                 logger.warning(
