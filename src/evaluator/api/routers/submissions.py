@@ -183,6 +183,47 @@ def get_submission_status(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc))
 
 
+@router.get(
+    "/{submission_id}/history",
+    summary="Get submission evaluation and lifecycle transition history",
+)
+def get_submission_history(
+    submission_id: str,
+    service: SubmissionService = Depends(get_submission_service),
+) -> dict:
+    """Retrieve full audit history for a submission including status changes and evaluation audit."""
+    try:
+        record = service.get_submission(submission_id)
+        report = _evaluation_store.get_by_submission(submission_id)
+
+        audit_steps = []
+        if report and report.workflow_audit:
+            audit_steps = [
+                {
+                    "step": s.step.value if hasattr(s.step, "value") else str(s.step),
+                    "status": s.status.value if hasattr(s.status, "value") else str(s.status),
+                    "duration_seconds": s.duration_seconds,
+                    "details": s.details,
+                    "timestamp": s.timestamp,
+                }
+                for s in report.workflow_audit.steps
+            ]
+
+        return {
+            "submission_id": record.submission_id,
+            "task_id": record.metadata.task_id,
+            "student_id": record.metadata.student_id,
+            "current_status": record.status.value,
+            "status_history": [
+                {"status": status.value, "timestamp": ts}
+                for status, ts in record.status_history
+            ],
+            "workflow_audit_steps": audit_steps,
+        }
+    except EntityNotFoundError as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc))
+
+
 @router.post(
     "/{submission_id}/evaluate",
     summary="Trigger evaluation workflow for a submission",

@@ -40,3 +40,9 @@ class AssignmentService:
         """Return all stored assignments."""
         return self._store.list_all()
 
+    def update_assignment(self, assignment: AssignmentDefinition) -> AssignmentDefinition:
+        """Update an existing assignment definition."""
+        self.get_assignment(assignment.task_id)
+        self._store.update(assignment)
+        return assignment
+

@@ -20,6 +20,14 @@ from evaluator.stores.evaluation_store import (
     EvaluationStore,
     InMemoryEvaluationStore,
 )
+from evaluator.stores.rubric_store import (
+    InMemoryRubricStore,
+    RubricStore,
+)
+from evaluator.stores.user_store import (
+    InMemoryUserStore,
+    UserStore,
+)
 
 __all__ = [
     "AssignmentStore",
@@ -32,4 +40,8 @@ __all__ = [
     "InMemorySubmissionStore",
     "EvaluationStore",
     "InMemoryEvaluationStore",
+    "RubricStore",
+    "InMemoryRubricStore",
+    "UserStore",
+    "InMemoryUserStore",
 ]

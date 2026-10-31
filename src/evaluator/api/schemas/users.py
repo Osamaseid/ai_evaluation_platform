@@ -1,7 +1,7 @@
 """Pydantic schemas for student and instructor entities."""
 
 from datetime import datetime
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, Field
 
 
 class StudentCreateSchema(BaseModel):

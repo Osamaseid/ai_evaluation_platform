@@ -35,6 +35,10 @@ class EvaluationReport:
     structured_feedback: Any | None = None
     workflow_audit: Any | None = None
     feedback_summary: str | None = None
+    instructor_notes: str | None = None
+    manual_override_score: int | None = None
+    reviewed_by: str | None = None
+    reviewed_at: datetime | None = None
 
     def __post_init__(self) -> None:
         if not isinstance(self.status, EvaluationStatus):

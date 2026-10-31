@@ -12,6 +12,10 @@ class AssignmentStore(Protocol):
         """Persist an assignment. Raises ValueError if task_id already exists."""
         ...
 
+    def update(self, assignment: AssignmentDefinition) -> None:
+        """Update an existing assignment. Raises EntityNotFoundError if missing."""
+        ...
+
     def get(self, task_id: str) -> AssignmentDefinition | None:
         """Retrieve an assignment by task_id, or None if not found."""
         ...
@@ -31,6 +35,15 @@ class InMemoryAssignmentStore:
         if assignment.task_id in self._assignments:
             raise ValueError(
                 f"Assignment '{assignment.task_id}' already exists."
+            )
+        self._assignments[assignment.task_id] = assignment
+
+    def update(self, assignment: AssignmentDefinition) -> None:
+        from evaluator.exceptions import EntityNotFoundError
+
+        if assignment.task_id not in self._assignments:
+            raise EntityNotFoundError(
+                f"Assignment '{assignment.task_id}' not found."
             )
         self._assignments[assignment.task_id] = assignment
 

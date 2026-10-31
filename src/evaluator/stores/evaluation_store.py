@@ -13,6 +13,10 @@ class EvaluationStore(Protocol):
         """Persist an evaluation report. Raises DuplicateEntityError if already exists."""
         ...
 
+    def update(self, report: EvaluationReport) -> None:
+        """Update an existing evaluation report. Raises EntityNotFoundError if missing."""
+        ...
+
     def get(self, evaluation_id: str) -> EvaluationReport | None:
         """Retrieve an evaluation report by ID."""
         ...
@@ -36,6 +40,15 @@ class InMemoryEvaluationStore:
         if report.evaluation_id in self._reports:
             raise DuplicateEntityError(
                 f"EvaluationReport '{report.evaluation_id}' already exists."
+            )
+        self._reports[report.evaluation_id] = report
+
+    def update(self, report: EvaluationReport) -> None:
+        from evaluator.exceptions import EntityNotFoundError
+
+        if report.evaluation_id not in self._reports:
+            raise EntityNotFoundError(
+                f"EvaluationReport '{report.evaluation_id}' not found."
             )
         self._reports[report.evaluation_id] = report
 
