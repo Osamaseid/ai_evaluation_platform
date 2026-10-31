@@ -12,9 +12,13 @@ class WorkflowStep(str, Enum):
     ASSIGNMENT_RETRIEVAL = "assignment_retrieval"
     SOURCE_COLLECTION = "source_collection"
     AUTOMATED_TESTING = "automated_testing"
-    DETERMINISTIC_GRADING = "deterministic_grading"
+    GEMINI_CODE_REVIEW = "gemini_code_review"
     AI_CODE_REVIEW = "ai_code_review"
+    STRUCTURED_AI_VALIDATION = "structured_ai_validation"
+    DETERMINISTIC_GRADING = "deterministic_grading"
     FEEDBACK_GENERATION = "feedback_generation"
+    REPORT_CREATION = "report_creation"
+    DATABASE_PERSISTENCE = "database_persistence"
     REPORT_PERSISTENCE = "report_persistence"
 
 
@@ -61,8 +65,15 @@ class WorkflowExecutionAudit:
         record = WorkflowStepAudit(
             step=step,
             status=status,
-            duration_seconds=max(0.0, duration_seconds),
+            duration_seconds=max(0.0, round(duration_seconds, 4)),
             details=details,
         )
         self.steps.append(record)
         return record
+
+    def get_step(self, step: WorkflowStep) -> WorkflowStepAudit | None:
+        """Find the most recent audit record for a given step."""
+        for s in reversed(self.steps):
+            if s.step == step:
+                return s
+        return None

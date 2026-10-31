@@ -3,6 +3,7 @@
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from enum import Enum
+from typing import Any
 import uuid
 
 from evaluator.assignment import AssignmentDefinition
@@ -31,6 +32,9 @@ class EvaluationReport:
     rubric_evaluations: tuple[RubricEvaluation, ...] = ()
     ai_review: str | None = None
     evaluated_at: datetime | None = None
+    structured_feedback: Any | None = None
+    workflow_audit: Any | None = None
+    feedback_summary: str | None = None
 
     def __post_init__(self) -> None:
         if not isinstance(self.status, EvaluationStatus):

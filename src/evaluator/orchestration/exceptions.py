@@ -9,3 +9,4 @@ class DuplicateProcessingError(DomainError):
 
 class InfrastructureExecutionError(DomainError):
     """Raised when a test runner or container worker fails to execute due to host/environment errors."""
+
