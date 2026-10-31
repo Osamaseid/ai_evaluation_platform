@@ -8,10 +8,12 @@ version = "0.1.0"
 description = "AI-assisted programming assignment evaluation platform"
 requires-python = ">=3.11"
 dependencies = [
-     "fastapi",
+    "fastapi",
     "python-multipart",
+    "python-dotenv",
     "requests",
     "google-genai",
+    "uvicorn",
 ]
 
 [project.optional-dependencies]
