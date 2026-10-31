@@ -1,4 +1,3 @@
-
 """Assignment definitions and test-case configuration."""
 
 from dataclasses import dataclass
@@ -13,6 +12,9 @@ class TestCaseDefinition:
     test_case_id: str
     description: str
     points: int
+    assertion: str | None = None
+    input_data: str | None = None
+    expected_output: str | None = None
 
     def __post_init__(self) -> None:
         if not isinstance(self.test_case_id, str) or not self.test_case_id.strip():
@@ -27,6 +29,15 @@ class TestCaseDefinition:
 
         if self.points <= 0:
             raise ValueError("points must be greater than zero.")
+
+        if self.assertion is not None and not isinstance(self.assertion, str):
+            raise TypeError("assertion must be a string or None.")
+
+        if self.input_data is not None and not isinstance(self.input_data, str):
+            raise TypeError("input_data must be a string or None.")
+
+        if self.expected_output is not None and not isinstance(self.expected_output, str):
+            raise TypeError("expected_output must be a string or None.")
 
 
 @dataclass(frozen=True)

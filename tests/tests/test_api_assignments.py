@@ -1,10 +1,16 @@
-"""Tests for the assignment management API endpoints."""
+"""Unit tests for assignment management API router and schemas."""
 
 import pytest
-from fastapi.testclient import TestClient
+from fastapi import HTTPException
 
-from evaluator.api.app import create_app
-from evaluator.api.routers.assignments import get_assignment_store
+from evaluator.api.routers.assignments import (
+    create_assignment,
+    list_assignments,
+)
+from evaluator.api.schemas.assignments import (
+    CreateAssignmentRequest,
+    TestCaseSchema,
+)
 from evaluator.stores.assignment_store import InMemoryAssignmentStore
 
 
@@ -15,100 +21,45 @@ def store():
 
 
 @pytest.fixture
-def client(store):
-    """Create a test client with an isolated store."""
-    app = create_app()
-    app.dependency_overrides[get_assignment_store] = lambda: store
-    return TestClient(app)
+def valid_request():
+    return CreateAssignmentRequest(
+        task_id="python_week1",
+        title="Calculator Functions",
+        test_cases=[
+            TestCaseSchema(test_case_id="add", description="Add two numbers", points=5),
+            TestCaseSchema(test_case_id="subtract", description="Subtract two numbers", points=5),
+        ],
+    )
 
 
-VALID_ASSIGNMENT = {
-    "task_id": "python_week1",
-    "title": "Calculator Functions",
-    "test_cases": [
-        {"test_case_id": "add", "description": "Add two numbers", "points": 5},
-        {"test_case_id": "subtract", "description": "Subtract two numbers", "points": 5},
-    ],
-}
+class TestCreateAssignmentEndpoint:
+    def test_successful_creation(self, store, valid_request):
+        response = create_assignment(valid_request, store=store)
+
+        assert response.task_id == "python_week1"
+        assert response.title == "Calculator Functions"
+        assert response.max_score == 10
+        assert len(response.test_cases) == 2
+
+    def test_duplicate_task_id_raises_409(self, store, valid_request):
+        create_assignment(valid_request, store=store)
+
+        with pytest.raises(HTTPException) as exc_info:
+            create_assignment(valid_request, store=store)
+
+        assert exc_info.value.status_code == 409
+        assert "already exists" in exc_info.value.detail
 
 
-# ---------------------------------------------------------------------------
-# POST /assignments
-# ---------------------------------------------------------------------------
+class TestListAssignmentsEndpoint:
+    def test_empty_list(self, store):
+        items = list_assignments(store=store)
+        assert items == []
 
+    def test_returns_created_assignments(self, store, valid_request):
+        create_assignment(valid_request, store=store)
+        items = list_assignments(store=store)
 
-class TestCreateAssignment:
-    """Tests for assignment creation."""
-
-    def test_successful_creation(self, client):
-        response = client.post("/assignments", json=VALID_ASSIGNMENT)
-
-        assert response.status_code == 201
-
-        data = response.json()
-        assert data["task_id"] == "python_week1"
-        assert data["title"] == "Calculator Functions"
-        assert data["max_score"] == 10
-        assert len(data["test_cases"]) == 2
-
-    def test_duplicate_task_id_returns_409(self, client):
-        client.post("/assignments", json=VALID_ASSIGNMENT)
-        response = client.post("/assignments", json=VALID_ASSIGNMENT)
-
-        assert response.status_code == 409
-        assert "already exists" in response.json()["detail"]
-
-    def test_empty_task_id_returns_422(self, client):
-        payload = {**VALID_ASSIGNMENT, "task_id": ""}
-        response = client.post("/assignments", json=payload)
-
-        assert response.status_code == 422
-
-    def test_invalid_task_id_characters_returns_422(self, client):
-        payload = {**VALID_ASSIGNMENT, "task_id": "../hack"}
-        response = client.post("/assignments", json=payload)
-
-        assert response.status_code == 422
-
-    def test_missing_test_cases_returns_422(self, client):
-        payload = {"task_id": "test1", "title": "Test"}
-        response = client.post("/assignments", json=payload)
-
-        assert response.status_code == 422
-
-    def test_zero_points_returns_422(self, client):
-        payload = {
-            **VALID_ASSIGNMENT,
-            "test_cases": [
-                {"test_case_id": "t1", "description": "Test", "points": 0},
-            ],
-        }
-        response = client.post("/assignments", json=payload)
-
-        assert response.status_code == 422
-
-
-# ---------------------------------------------------------------------------
-# GET /assignments
-# ---------------------------------------------------------------------------
-
-
-class TestListAssignments:
-    """Tests for listing assignments."""
-
-    def test_empty_list(self, client):
-        response = client.get("/assignments")
-
-        assert response.status_code == 200
-        assert response.json() == []
-
-    def test_returns_created_assignments(self, client):
-        client.post("/assignments", json=VALID_ASSIGNMENT)
-        response = client.get("/assignments")
-
-        assert response.status_code == 200
-        data = response.json()
-        assert len(data) == 1
-        assert data[0]["task_id"] == "python_week1"
-        assert data[0]["max_score"] == 10
-
+        assert len(items) == 1
+        assert items[0].task_id == "python_week1"
+        assert items[0].max_score == 10

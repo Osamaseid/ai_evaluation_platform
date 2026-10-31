@@ -6,6 +6,8 @@ from pydantic import BaseModel, Field
 class TestCaseSchema(BaseModel):
     """One test case in an assignment — used in both requests and responses."""
 
+    __test__ = False
+
     test_case_id: str = Field(
         ...,
         min_length=1,
@@ -52,4 +54,3 @@ class AssignmentResponse(BaseModel):
     max_score: int
 
     model_config = {"from_attributes": True}
-

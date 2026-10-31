@@ -13,6 +13,7 @@ class TestCaseResult:
 
     test_case_id: str
     passed: bool
+    message: str | None = None
 
     def __post_init__(self) -> None:
         if not isinstance(self.test_case_id, str) or not self.test_case_id.strip():
@@ -20,6 +21,9 @@ class TestCaseResult:
 
         if not isinstance(self.passed, bool):
             raise TypeError("passed must be a boolean.")
+
+        if self.message is not None and not isinstance(self.message, str):
+            raise TypeError("message must be a string or None.")
 
 
 @dataclass(frozen=True)
