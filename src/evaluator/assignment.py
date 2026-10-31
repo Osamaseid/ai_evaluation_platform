@@ -1,6 +1,9 @@
-"""Assignment definitions and test-case configuration."""
+"""Assignment definitions, test cases, and rubric configuration."""
 
 from dataclasses import dataclass
+from datetime import datetime, timezone
+
+from evaluator.rubric import GradingRubric
 
 
 @dataclass(frozen=True)
@@ -42,11 +45,14 @@ class TestCaseDefinition:
 
 @dataclass(frozen=True)
 class AssignmentDefinition:
-    """Describe a programming assignment and its grading tests."""
+    """Describe a programming assignment, its grading tests, and optional rubrics."""
 
     task_id: str
     title: str
     test_cases: tuple[TestCaseDefinition, ...]
+    instructor_id: str | None = None
+    deadline: datetime | None = None
+    rubric: GradingRubric | None = None
 
     def __post_init__(self) -> None:
         if not isinstance(self.task_id, str) or not self.task_id.strip():
@@ -70,7 +76,24 @@ class AssignmentDefinition:
         if len(case_ids) != len(set(case_ids)):
             raise ValueError("Test case IDs must be unique.")
 
+        if self.instructor_id is not None:
+            if not isinstance(self.instructor_id, str) or not self.instructor_id.strip():
+                raise ValueError("instructor_id cannot be empty if specified.")
+
+        if self.deadline is not None and not isinstance(self.deadline, datetime):
+            raise TypeError("deadline must be a datetime instance or None.")
+
+        if self.rubric is not None and not isinstance(self.rubric, GradingRubric):
+            raise TypeError("rubric must be a GradingRubric instance or None.")
+
     @property
     def max_score(self) -> int:
-        """Calculate the maximum possible score."""
+        """Calculate the maximum possible score from deterministic test cases."""
         return sum(case.points for case in self.test_cases)
+
+    def is_past_deadline(self, at_time: datetime | None = None) -> bool:
+        """Check if a given timestamp (or current time) is past the submission deadline."""
+        if self.deadline is None:
+            return False
+        current = at_time or datetime.now(timezone.utc)
+        return current > self.deadline
