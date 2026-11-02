@@ -31,23 +31,25 @@ from evaluator.stores.submission_store import (
 )
 from evaluator.submission import SubmissionRecord
 
-router = APIRouter(prefix="/students", tags=["students"])
+from evaluator.api.dependencies.stores import (
+    shared_evaluation_store,
+    shared_student_store,
+    shared_submission_store,
+)
 
-_student_store = InMemoryStudentStore()
-_submission_store = InMemorySubmissionStore()
-_evaluation_store = InMemoryEvaluationStore()
+router = APIRouter(prefix="/students", tags=["students"])
 
 
 def get_student_service() -> StudentService:
-    return StudentService(_student_store)
+    return StudentService(shared_student_store)
 
 
 def get_submission_store() -> SubmissionStore:
-    return _submission_store
+    return shared_submission_store
 
 
 def get_evaluation_store() -> EvaluationStore:
-    return _evaluation_store
+    return shared_evaluation_store
 
 
 def _check_access_permission(current_user: UserAccount, target_student_id: str) -> None:

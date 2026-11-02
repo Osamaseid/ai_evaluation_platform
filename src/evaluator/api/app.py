@@ -1,6 +1,7 @@
 """FastAPI application factory for the AI-Powered Programming Evaluation Platform."""
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from evaluator.api.errors import register_exception_handlers
 from evaluator.api.routers import (
@@ -30,6 +31,22 @@ def create_app() -> FastAPI:
         ],
     )
 
+    # Enable CORS for frontend integration
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=[
+            "http://localhost:5173",
+            "http://127.0.0.1:5173",
+            "http://localhost:3000",
+            "http://127.0.0.1:3000",
+            "http://localhost:8080",
+        ],
+        allow_origin_regex=r"https?://(localhost|127\.0\.0\.1)(:\d+)?",
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
     # Register centralized domain exception handlers
     register_exception_handlers(app)
 
@@ -45,6 +62,17 @@ def create_app() -> FastAPI:
     def health_check() -> dict:
         """Verify the backend service is operational."""
         return {"status": "healthy", "service": "programming-evaluator-api"}
+
+    # Mount built React frontend SPA if dist folder exists
+    import os
+    from fastapi.staticfiles import StaticFiles
+
+    dist_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../frontend/dist"))
+    if not os.path.exists(dist_dir):
+        dist_dir = os.path.abspath(os.path.join(os.getcwd(), "frontend", "dist"))
+
+    if os.path.exists(dist_dir) and os.path.isdir(dist_dir):
+        app.mount("/", StaticFiles(directory=dist_dir, html=True), name="static")
 
     return app
 

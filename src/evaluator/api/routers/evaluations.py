@@ -29,26 +29,27 @@ from evaluator.stores.submission_store import (
     SubmissionStore,
 )
 
-router = APIRouter(prefix="/evaluations", tags=["evaluation"])
+from evaluator.api.dependencies.stores import (
+    shared_assignment_store,
+    shared_evaluation_store,
+    shared_file_storage,
+    shared_submission_store,
+)
 
-# Storage singletons
-_submission_store = InMemorySubmissionStore()
-_assignment_store = InMemoryAssignmentStore()
-_evaluation_store = InMemoryEvaluationStore()
-_file_storage = ControlledFileStorage()
+router = APIRouter(prefix="/evaluations", tags=["evaluation"])
 
 
 def get_evaluation_store() -> EvaluationStore:
-    return _evaluation_store
+    return shared_evaluation_store
 
 
 def get_orchestrator() -> EvaluationOrchestrator:
     return EvaluationOrchestrator(
-        submission_store=_submission_store,
-        assignment_store=_assignment_store,
-        evaluation_store=_evaluation_store,
+        submission_store=shared_submission_store,
+        assignment_store=shared_assignment_store,
+        evaluation_store=shared_evaluation_store,
         runner=IsolatedProcessRunner(),
-        storage=_file_storage,
+        storage=shared_file_storage,
     )
 
 

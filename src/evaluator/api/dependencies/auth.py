@@ -4,6 +4,11 @@ from collections.abc import Callable
 from fastapi import Depends, HTTPException, Security, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
+from evaluator.api.dependencies.stores import (
+    shared_instructor_store,
+    shared_student_store,
+    shared_user_store,
+)
 from evaluator.auth.exceptions import (
     AuthenticationError,
     AuthorizationError,
@@ -13,25 +18,19 @@ from evaluator.auth.exceptions import (
 )
 from evaluator.auth.models import UserAccount, UserRole
 from evaluator.services.auth_service import AuthService
-from evaluator.stores.instructor_store import InMemoryInstructorStore
-from evaluator.stores.student_store import InMemoryStudentStore
-from evaluator.stores.user_store import InMemoryUserStore
 
 _security = HTTPBearer(auto_error=False)
 
 # Shared singleton dependencies for application lifecycle
-_user_store = InMemoryUserStore()
-_student_store = InMemoryStudentStore()
-_instructor_store = InMemoryInstructorStore()
 _auth_service = AuthService(
-    user_store=_user_store,
-    student_store=_student_store,
-    instructor_store=_instructor_store,
+    user_store=shared_user_store,
+    student_store=shared_student_store,
+    instructor_store=shared_instructor_store,
 )
 
 
 def get_user_store():
-    return _user_store
+    return shared_user_store
 
 
 def get_auth_service() -> AuthService:

@@ -2,29 +2,20 @@
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
+from evaluator.api.dependencies.stores import shared_assignment_store
 from evaluator.api.schemas.assignments import (
     AssignmentResponse,
     CreateAssignmentRequest,
 )
 from evaluator.assignment import AssignmentDefinition, TestCaseDefinition
-from evaluator.stores.assignment_store import (
-    AssignmentStore,
-    InMemoryAssignmentStore,
-)
+from evaluator.stores.assignment_store import AssignmentStore
 
 router = APIRouter(prefix="/assignments", tags=["assignments"])
-
-# ---------------------------------------------------------------------------
-# Dependency: a single shared store instance for the application lifetime.
-# FastAPI calls this function once (thanks to the default scope) and injects
-# the result into every endpoint that declares `store: ... = Depends(...)`.
-# ---------------------------------------------------------------------------
-_store = InMemoryAssignmentStore()
 
 
 def get_assignment_store() -> AssignmentStore:
     """Return the application's assignment store."""
-    return _store
+    return shared_assignment_store
 
 
 # ---------------------------------------------------------------------------

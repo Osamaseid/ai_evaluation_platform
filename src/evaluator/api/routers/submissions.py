@@ -27,25 +27,31 @@ from evaluator.stores.student_store import InMemoryStudentStore
 from evaluator.stores.submission_store import InMemorySubmissionStore
 from evaluator.submission import SubmissionRecord
 
+from evaluator.api.dependencies.stores import (
+    shared_assignment_store,
+    shared_evaluation_store,
+    shared_file_storage,
+    shared_student_store,
+    shared_submission_store,
+)
+
 router = APIRouter(prefix="/submissions", tags=["submissions"])
 
-# ---------------------------------------------------------------------------
-# Shared application dependencies
-# ---------------------------------------------------------------------------
-_submission_store = InMemorySubmissionStore()
-_assignment_store = InMemoryAssignmentStore()
-_student_store = InMemoryStudentStore()
-_evaluation_store = InMemoryEvaluationStore()
-_file_storage = ControlledFileStorage()
+
+from evaluator.stores.evaluation_store import EvaluationStore
+
+
+def get_evaluation_store() -> EvaluationStore:
+    return shared_evaluation_store
 
 
 def get_submission_service() -> SubmissionService:
     """Provide submission service with configured storage."""
     return SubmissionService(
-        submission_store=_submission_store,
-        assignment_store=_assignment_store,
-        student_store=_student_store,
-        storage=_file_storage,
+        submission_store=shared_submission_store,
+        assignment_store=shared_assignment_store,
+        student_store=shared_student_store,
+        storage=shared_file_storage,
     )
 
 
@@ -54,11 +60,11 @@ def get_evaluation_orchestrator() -> EvaluationOrchestrator:
     from evaluator.runners.process_runner import IsolatedProcessRunner
 
     return EvaluationOrchestrator(
-        submission_store=_submission_store,
-        assignment_store=_assignment_store,
-        evaluation_store=_evaluation_store,
+        submission_store=shared_submission_store,
+        assignment_store=shared_assignment_store,
+        evaluation_store=shared_evaluation_store,
         runner=IsolatedProcessRunner(),
-        storage=_file_storage,
+        storage=shared_file_storage,
     )
 
 
@@ -190,11 +196,12 @@ def get_submission_status(
 def get_submission_history(
     submission_id: str,
     service: SubmissionService = Depends(get_submission_service),
+    evaluation_store: EvaluationStore = Depends(get_evaluation_store),
 ) -> dict:
     """Retrieve full audit history for a submission including status changes and evaluation audit."""
     try:
         record = service.get_submission(submission_id)
-        report = _evaluation_store.get_by_submission(submission_id)
+        report = evaluation_store.get_by_submission(submission_id)
 
         audit_steps = []
         if report and report.workflow_audit:

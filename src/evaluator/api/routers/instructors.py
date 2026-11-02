@@ -57,38 +57,39 @@ from evaluator.stores.student_store import (
 )
 from evaluator.users import Instructor, Student
 
-router = APIRouter(prefix="/instructors", tags=["instructors"])
+from evaluator.api.dependencies.stores import (
+    shared_assignment_store,
+    shared_evaluation_store,
+    shared_instructor_store,
+    shared_rubric_store,
+    shared_student_store,
+)
 
-# Shared storage singletons
-_instructor_store = InMemoryInstructorStore()
-_student_store = InMemoryStudentStore()
-_assignment_store = InMemoryAssignmentStore()
-_rubric_store = InMemoryRubricStore()
-_evaluation_store = InMemoryEvaluationStore()
+router = APIRouter(prefix="/instructors", tags=["instructors"])
 
 
 def get_instructor_service() -> InstructorService:
-    return InstructorService(_instructor_store)
+    return InstructorService(shared_instructor_store)
 
 
 def get_student_service() -> StudentService:
-    return StudentService(_student_store)
+    return StudentService(shared_student_store)
 
 
 def get_assignment_service() -> AssignmentService:
-    return AssignmentService(_assignment_store, _instructor_store)
+    return AssignmentService(shared_assignment_store, shared_instructor_store)
 
 
 def get_rubric_store() -> RubricStore:
-    return _rubric_store
+    return shared_rubric_store
 
 
 def get_evaluation_store() -> EvaluationStore:
-    return _evaluation_store
+    return shared_evaluation_store
 
 
 def get_manual_review_service() -> ManualReviewService:
-    return ManualReviewService(_evaluation_store, _instructor_store)
+    return ManualReviewService(shared_evaluation_store, shared_instructor_store)
 
 
 def _to_evaluation_schema(report: EvaluationReport) -> EvaluationReportResponse:

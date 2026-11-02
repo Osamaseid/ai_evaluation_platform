@@ -650,7 +650,7 @@ class TestSubmissionEndpoints:
         assert "storage://submissions/" in sub_resp.source_reference
 
         # Query history
-        hist = get_submission_history(sub_resp.submission_id, service=sub_svc)
+        hist = get_submission_history(sub_resp.submission_id, service=sub_svc, evaluation_store=eval_st)
         assert hist["submission_id"] == sub_resp.submission_id
         assert hist["task_id"] == "algo_hw1"
         assert hist["current_status"] == "received"
