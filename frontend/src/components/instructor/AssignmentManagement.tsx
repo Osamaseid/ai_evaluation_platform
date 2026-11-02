@@ -108,10 +108,12 @@ export const AssignmentManagement: React.FC = () => {
                     style={{
                       fontFamily: 'var(--font-mono)',
                       fontSize: '0.75rem',
-                      color: 'var(--primary)',
-                      backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                      color: 'var(--primary-dark)',
+                      backgroundColor: 'var(--primary-light)',
+                      border: '1px solid var(--primary-border)',
                       padding: '0.2rem 0.5rem',
                       borderRadius: 'var(--radius-sm)',
+                      fontWeight: 600,
                     }}
                   >
                     {asgn.task_id}

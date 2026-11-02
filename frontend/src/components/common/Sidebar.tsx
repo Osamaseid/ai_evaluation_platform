@@ -8,11 +8,11 @@ import {
   Sliders,
   FileCheck2,
   BarChart3,
-  Sparkles,
-  Award,
+  UserCheck,
+  ShieldCheck,
 } from 'lucide-react';
 
-export type StudentTab = 'overview' | 'assignments' | 'submit' | 'history';
+export type StudentTab = 'overview' | 'assignments' | 'submit' | 'history' | 'profile';
 export type InstructorTab =
   | 'overview'
   | 'students'
@@ -41,6 +41,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: 'assignments', label: 'Available Assignments', icon: <BookOpen size={18} /> },
     { id: 'submit', label: 'Submit Assignment', icon: <UploadCloud size={18} /> },
     { id: 'history', label: 'Submission History', icon: <History size={18} /> },
+    { id: 'profile', label: 'Student Profile', icon: <UserCheck size={18} /> },
   ];
 
   const instructorNavItems = [
@@ -60,19 +61,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
         <div className="sidebar-header">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-            <span
-              style={{
-                fontSize: '0.75rem',
-                textTransform: 'uppercase',
-                letterSpacing: '0.08em',
-                fontWeight: 700,
-                color: 'var(--text-dim)',
-              }}
-            >
-              {roleView === 'student' ? 'Student Workspace' : 'Instructor Portal'}
-            </span>
-          </div>
+          <span className="sidebar-workspace-tag">
+            {roleView === 'student' ? (
+              <>
+                <UserCheck size={14} /> Student Workspace
+              </>
+            ) : (
+              <>
+                <ShieldCheck size={14} /> Instructor Suite
+              </>
+            )}
+          </span>
         </div>
 
         <nav className="sidebar-nav">
@@ -92,21 +91,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </nav>
 
         <div className="sidebar-footer">
-          <div
-            style={{
-              padding: '0.75rem',
-              borderRadius: 'var(--radius-md)',
-              backgroundColor: 'rgba(139, 92, 246, 0.1)',
-              border: '1px solid rgba(139, 92, 246, 0.25)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.65rem',
-            }}
-          >
-            <Sparkles size={20} color="#a855f7" />
-            <div style={{ fontSize: '0.75rem' }}>
-              <strong style={{ display: 'block', color: '#c084fc' }}>Gemini AI Review</strong>
-              <span style={{ color: 'var(--text-muted)' }}>Deterministic + AI Feedback</span>
+          <div className="sidebar-brand-card">
+            <img
+              src="/brand/akiba-icon.png"
+              alt="Akiba Technologies"
+              className="sidebar-brand-icon"
+            />
+            <div style={{ fontSize: '0.75rem', lineHeight: 1.3 }}>
+              <strong style={{ display: 'block', color: 'var(--primary-dark)', fontWeight: 700 }}>
+                Akiba Evaluator
+              </strong>
+              <span style={{ color: 'var(--text-muted)' }}>
+                Deterministic + Gemini AI
+              </span>
             </div>
           </div>
         </div>
@@ -114,4 +111,3 @@ export const Sidebar: React.FC<SidebarProps> = ({
     </>
   );
 };
-

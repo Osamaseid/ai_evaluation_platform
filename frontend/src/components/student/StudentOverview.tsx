@@ -17,6 +17,7 @@ import {
   Award,
   ArrowRight,
   TrendingUp,
+  FileCode,
 } from 'lucide-react';
 
 interface StudentOverviewProps {
@@ -76,45 +77,49 @@ export const StudentOverview: React.FC<StudentOverviewProps> = ({ onNavigateTab 
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
-      {/* Welcome Banner */}
+      {/* Welcome Hero Banner (Akiba Technologies Clean SaaS Brand Style) */}
       <div
         style={{
-          background: 'linear-gradient(135deg, rgba(37, 99, 235, 0.15), rgba(139, 92, 246, 0.15))',
+          backgroundColor: '#ffffff',
           border: '1px solid var(--border-color)',
+          borderLeft: '4px solid var(--primary)',
           borderRadius: 'var(--radius-lg)',
           padding: '1.75rem 2rem',
           display: 'flex',
           flexWrap: 'wrap',
           alignItems: 'center',
           justifyContent: 'space-between',
-          gap: '1.25rem',
+          gap: '1.5rem',
+          boxShadow: 'var(--shadow-sm)',
         }}
       >
         <div>
-          <span
-            style={{
-              fontSize: '0.8rem',
-              fontWeight: 600,
-              color: 'var(--primary)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em',
-            }}
-          >
-            Student Learning Dashboard
-          </span>
-          <h1 style={{ fontSize: '1.65rem', fontWeight: 700, color: 'var(--text-main)', marginTop: '0.2rem' }}>
-            Welcome back, {user?.name || 'Student'}!
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem' }}>
+            <span
+              style={{
+                fontSize: '0.75rem',
+                fontWeight: 700,
+                color: 'var(--primary)',
+                textTransform: 'uppercase',
+                letterSpacing: '0.06em',
+              }}
+            >
+              Akiba Technologies &bull; Student Engineering Academy
+            </span>
+          </div>
+          <h1 style={{ fontSize: '1.65rem', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.02em' }}>
+            Welcome back, {user?.name || 'Student Ada'}!
           </h1>
-          <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', maxWidth: '580px', marginTop: '0.35rem' }}>
-            Submit programming assignments via GitHub URLs or direct code uploads. Get immediate deterministic grading and detailed Gemini AI code explanations.
+          <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', maxWidth: '620px', marginTop: '0.35rem' }}>
+            Submit programming assignments via GitHub repository URLs or direct source-code archives. Receive immediate deterministic grading and actionable Gemini AI code reviews.
           </p>
         </div>
 
         <div style={{ display: 'flex', gap: '0.75rem' }}>
-          <button onClick={() => onNavigateTab('assignments')} className="btn btn-primary" style={{ gap: '0.4rem' }}>
-            <BookOpen size={16} /> View Assignments
+          <button onClick={() => onNavigateTab('assignments')} className="btn btn-primary" style={{ gap: '0.45rem' }}>
+            <BookOpen size={16} /> Explore Assignments
           </button>
-          <button onClick={() => onNavigateTab('history')} className="btn btn-outline" style={{ gap: '0.4rem' }}>
+          <button onClick={() => onNavigateTab('history')} className="btn btn-secondary" style={{ gap: '0.45rem' }}>
             Submission History <ArrowRight size={16} />
           </button>
         </div>
@@ -138,107 +143,166 @@ export const StudentOverview: React.FC<StudentOverviewProps> = ({ onNavigateTab 
               label="Submissions"
               value={totalSubmissions}
               icon={<UploadCloud size={24} />}
-              subtitle="Total submissions recorded"
+              subtitle="Code submissions processed"
             />
             <MetricCard
-              label="Evaluations Complete"
+              label="Completed Reviews"
               value={completedEvals.length}
               icon={<CheckCircle2 size={24} />}
-              subtitle="Graded by automated suite"
+              subtitle="Deterministic & AI feedback ready"
             />
             <MetricCard
-              label="Average Grade"
+              label="Average Score"
               value={`${avgScore}%`}
-              icon={<Award size={24} />}
-              subtitle="Overall class performance"
-              trend={{ value: avgScore >= 70 ? 'Proficient' : 'Needs practice', isPositive: avgScore >= 70 }}
+              icon={<TrendingUp size={24} />}
+              subtitle="Cumulative evaluation score"
             />
           </div>
 
-          {/* Quick Split Section */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '1.5rem' }}>
-            {/* Recent Submissions */}
+          {/* Quick Action Grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
+            {/* Recent Submissions Card */}
             <div className="card">
               <div className="card-header">
                 <div>
                   <h3 className="card-title">Recent Submissions</h3>
-                  <p className="card-subtitle">Your latest code submissions</p>
+                  <p className="card-subtitle">Latest automated test runs & grades</p>
                 </div>
                 <button
                   onClick={() => onNavigateTab('history')}
                   className="btn btn-outline btn-sm"
-                  style={{ border: 'none', color: 'var(--primary)' }}
+                  style={{ gap: '0.3rem' }}
                 >
-                  View All
+                  View All <ArrowRight size={14} />
                 </button>
               </div>
 
               {submissions.length === 0 ? (
-                <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', padding: '1rem 0' }}>
-                  No submissions recorded yet. Pick an assignment to begin!
-                </p>
+                <div className="empty-state" style={{ padding: '2rem 1rem' }}>
+                  <UploadCloud className="empty-state-icon" />
+                  <h4 className="empty-state-title">No submissions yet</h4>
+                  <p className="empty-state-desc">
+                    Pick an assignment from the catalog to submit your repository or files.
+                  </p>
+                  <button onClick={() => onNavigateTab('assignments')} className="btn btn-primary btn-sm">
+                    Browse Assignments
+                  </button>
+                </div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                  {submissions.slice(0, 4).map((sub) => (
-                    <div
-                      key={sub.submission_id}
-                      style={{
-                        padding: '0.75rem 1rem',
-                        backgroundColor: 'var(--bg-secondary)',
-                        border: '1px solid var(--border-color)',
-                        borderRadius: 'var(--radius-md)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                      }}
-                    >
-                      <div>
-                        <strong style={{ fontSize: '0.9rem', color: 'var(--text-main)', display: 'block' }}>
-                          {sub.task_id}
-                        </strong>
-                        <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)', fontFamily: 'var(--font-mono)' }}>
-                          {sub.submission_id} &bull; {new Date(sub.created_at).toLocaleDateString()}
-                        </span>
+                  {submissions.slice(0, 4).map((sub) => {
+                    const matchedEval = evaluations.find((e) => e.submission_id === sub.submission_id);
+                    const finalScore = matchedEval
+                      ? (matchedEval.manual_override_score ?? matchedEval.deterministic_score)
+                      : null;
+                    const maxScore = matchedEval ? matchedEval.max_score : 100;
+
+                    return (
+                      <div
+                        key={sub.submission_id}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          padding: '0.85rem 1rem',
+                          backgroundColor: '#f8fafc',
+                          borderRadius: 'var(--radius-md)',
+                          border: '1px solid var(--border-color)',
+                        }}
+                      >
+                        <div>
+                          <strong style={{ fontSize: '0.9rem', color: 'var(--text-main)', display: 'block' }}>
+                            {sub.task_id}
+                          </strong>
+                          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                            {sub.source_type === 'github' ? 'GitHub URL' : 'File Upload'} &bull;{' '}
+                            {new Date(sub.created_at).toLocaleDateString()}
+                          </span>
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                          {finalScore !== null ? (
+                            <span style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--primary)' }}>
+                              {finalScore} / {maxScore} pts
+                            </span>
+                          ) : (
+                            <Badge variant={sub.status === 'completed' ? 'success' : 'warning'}>
+                              {sub.status}
+                            </Badge>
+                          )}
+
+                          {matchedEval && (
+                            <button
+                              onClick={() => setSelectedReport(matchedEval)}
+                              className="btn btn-outline btn-sm"
+                              style={{ padding: '0.25rem 0.6rem', fontSize: '0.75rem' }}
+                            >
+                              Report
+                            </button>
+                          )}
+                        </div>
                       </div>
-                      <Badge variant={sub.status === 'evaluated' || sub.status === 'completed' ? 'success' : 'info'}>
-                        {sub.status}
-                      </Badge>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>
 
-            {/* AI Review Highlight */}
-            <div className="card" style={{ background: 'linear-gradient(145deg, var(--bg-card), rgba(139, 92, 246, 0.05))' }}>
+            {/* Active Assignments Card */}
+            <div className="card">
               <div className="card-header">
                 <div>
-                  <h3 className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                    <Sparkles size={18} color="#c084fc" /> Gemini AI Feedback
-                  </h3>
-                  <p className="card-subtitle">Pedagogical insights & code analysis</p>
+                  <h3 className="card-title">Available Assignments</h3>
+                  <p className="card-subtitle">Ready for submission & testing</p>
                 </div>
+                <button
+                  onClick={() => onNavigateTab('assignments')}
+                  className="btn btn-outline btn-sm"
+                  style={{ gap: '0.3rem' }}
+                >
+                  Catalog <ArrowRight size={14} />
+                </button>
               </div>
 
-              {evaluations.length > 0 && evaluations[0].ai_review ? (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-                  <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
-                    "{evaluations[0].ai_review.summary}"
-                  </p>
-                  <button
-                    onClick={() => setSelectedReport(evaluations[0])}
-                    className="btn btn-outline btn-sm"
-                    style={{ alignSelf: 'flex-start' }}
-                  >
-                    Read Full AI Code Review
-                  </button>
+              {assignments.length === 0 ? (
+                <div className="empty-state" style={{ padding: '2rem 1rem' }}>
+                  <BookOpen className="empty-state-icon" />
+                  <h4 className="empty-state-title">No assignments published</h4>
+                  <p className="empty-state-desc">Your instructor has not yet released any assignments.</p>
                 </div>
               ) : (
-                <div style={{ padding: '1.5rem 0', textAlign: 'center', color: 'var(--text-muted)' }}>
-                  <Sparkles size={32} color="var(--text-dim)" style={{ margin: '0 auto 0.5rem auto' }} />
-                  <p style={{ fontSize: '0.85rem' }}>
-                    Once you submit code and run evaluation, Google Gemini AI analyzes code quality, edge cases, and maintainability.
-                  </p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  {assignments.slice(0, 4).map((asgn) => (
+                    <div
+                      key={asgn.task_id}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        padding: '0.85rem 1rem',
+                        backgroundColor: '#f8fafc',
+                        borderRadius: 'var(--radius-md)',
+                        border: '1px solid var(--border-color)',
+                      }}
+                    >
+                      <div>
+                        <strong style={{ fontSize: '0.9rem', color: 'var(--text-main)', display: 'block' }}>
+                          {asgn.title || asgn.task_id}
+                        </strong>
+                        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                          Max Score: {asgn.max_score} pts &bull; {asgn.test_cases?.length || 0} Test Cases
+                        </span>
+                      </div>
+
+                      <button
+                        onClick={() => onNavigateTab('assignments')}
+                        className="btn btn-primary btn-sm"
+                        style={{ padding: '0.35rem 0.75rem' }}
+                      >
+                        Submit
+                      </button>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
@@ -246,16 +310,17 @@ export const StudentOverview: React.FC<StudentOverviewProps> = ({ onNavigateTab 
         </>
       )}
 
-      {/* Evaluation Report Modal */}
-      <Modal
-        isOpen={!!selectedReport}
-        onClose={() => setSelectedReport(null)}
-        title="Evaluation Report & AI Analysis"
-        size="large"
-      >
-        {selectedReport && <EvaluationDetailView report={selectedReport} />}
-      </Modal>
+      {/* Modal Report View */}
+      {selectedReport && (
+        <Modal
+          isOpen={true}
+          onClose={() => setSelectedReport(null)}
+          title={`Evaluation Report: ${selectedReport.task_id}`}
+          size="large"
+        >
+          <EvaluationDetailView report={selectedReport} />
+        </Modal>
+      )}
     </div>
   );
 };
-

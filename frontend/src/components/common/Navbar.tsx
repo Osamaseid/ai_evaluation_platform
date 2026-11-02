@@ -2,9 +2,7 @@ import React from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { Badge } from './Badge';
 import {
-  Code2,
   LogOut,
-  User,
   GraduationCap,
   Shield,
   Menu,
@@ -26,7 +24,6 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   const handleRoleSwitch = async (targetRole: 'student' | 'instructor') => {
     onSwitchRoleView(targetRole);
-    // If the active user isn't in that role, perform quickLogin
     if (user?.role !== targetRole) {
       await quickLogin(targetRole);
     }
@@ -45,53 +42,39 @@ export const Navbar: React.FC<NavbarProps> = ({
         </button>
 
         <a href="#" className="navbar-brand">
-          <div className="logo-icon">
-            <Code2 size={20} />
-          </div>
-          <span>AutoGrade <span style={{ color: 'var(--primary)' }}>AI</span></span>
+          <img
+            src="/brand/akiba-logo.png"
+            alt="Akiba Technologies"
+            className="brand-logo-img"
+          />
+          <span className="brand-divider" />
+          <span className="brand-subtitle-badge">
+            <Sparkles size={13} />
+            CodeGrade AI
+          </span>
         </a>
       </div>
 
       <div className="navbar-actions">
         {/* Role View Toggle Pill */}
-        <div
-          style={{
-            display: 'flex',
-            backgroundColor: 'var(--bg-secondary)',
-            border: '1px solid var(--border-color)',
-            borderRadius: '9999px',
-            padding: '3px',
-          }}
-        >
+        <div className="role-switcher-pill">
           <button
             onClick={() => handleRoleSwitch('student')}
-            className={`btn btn-sm ${
-              activeRoleView === 'student' ? 'btn-primary' : 'btn-outline'
+            className={`role-switcher-btn ${
+              activeRoleView === 'student' ? 'active' : ''
             }`}
-            style={{
-              border: 'none',
-              borderRadius: '9999px',
-              padding: '0.3rem 0.85rem',
-              fontSize: '0.8rem',
-            }}
           >
-            <GraduationCap size={14} style={{ marginRight: '4px' }} />
-            Student View
+            <GraduationCap size={15} />
+            Student Portal
           </button>
           <button
             onClick={() => handleRoleSwitch('instructor')}
-            className={`btn btn-sm ${
-              activeRoleView === 'instructor' ? 'btn-primary' : 'btn-outline'
+            className={`role-switcher-btn ${
+              activeRoleView === 'instructor' ? 'active' : ''
             }`}
-            style={{
-              border: 'none',
-              borderRadius: '9999px',
-              padding: '0.3rem 0.85rem',
-              fontSize: '0.8rem',
-            }}
           >
-            <Shield size={14} style={{ marginRight: '4px' }} />
-            Instructor View
+            <Shield size={15} />
+            Instructor Portal
           </button>
         </div>
 
@@ -102,13 +85,15 @@ export const Navbar: React.FC<NavbarProps> = ({
               {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
             </div>
             <div style={{ lineHeight: 1.2 }}>
-              <span style={{ fontWeight: 600, display: 'block' }}>{user.name}</span>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>
+              <span style={{ fontWeight: 700, display: 'block', fontSize: '0.85rem' }}>
+                {user.name}
+              </span>
+              <span style={{ fontSize: '0.725rem', color: 'var(--text-dim)', fontFamily: 'var(--font-mono)' }}>
                 {user.user_id}
               </span>
             </div>
             <Badge
-              variant={user.role === 'instructor' ? 'purple' : 'info'}
+              variant={user.role === 'instructor' ? 'purple' : 'success'}
               className="role-badge"
             >
               {user.role}
@@ -116,7 +101,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               onClick={() => logout()}
               className="btn btn-outline btn-sm"
-              style={{ border: 'none', padding: '0.2rem', color: 'var(--text-muted)' }}
+              style={{ border: 'none', padding: '0.25rem', color: 'var(--text-muted)' }}
               title="Sign Out"
               aria-label="Sign Out"
             >
@@ -143,4 +128,3 @@ export const Navbar: React.FC<NavbarProps> = ({
     </header>
   );
 };
-

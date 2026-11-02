@@ -7,12 +7,14 @@ import { RegisterForm } from './components/auth/RegisterForm';
 import { StudentOverview } from './components/student/StudentOverview';
 import { AssignmentList } from './components/student/AssignmentList';
 import { SubmissionHistory } from './components/student/SubmissionHistory';
+import { StudentProfile } from './components/student/StudentProfile';
 import { SubmitAssignmentModal } from './components/student/SubmitAssignmentModal';
 import { InstructorOverview } from './components/instructor/InstructorOverview';
 import { StudentManagement } from './components/instructor/StudentManagement';
 import { AssignmentManagement } from './components/instructor/AssignmentManagement';
 import { SubmissionMonitoring } from './components/instructor/SubmissionMonitoring';
 import { ClassPerformanceStats } from './components/instructor/ClassPerformanceStats';
+import { Sparkles } from 'lucide-react';
 
 export const App: React.FC = () => {
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -60,14 +62,22 @@ export const App: React.FC = () => {
   // Unauthenticated screen
   if (!isAuthenticated && !isLoading) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--bg-primary)' }}>
         <header className="navbar" style={{ justifyContent: 'center' }}>
           <div className="navbar-brand">
-            <div className="logo-icon">AG</div>
-            <span>AutoGrade <span style={{ color: 'var(--primary)' }}>AI</span></span>
+            <img
+              src="/brand/akiba-logo.png"
+              alt="Akiba Technologies"
+              className="brand-logo-img"
+            />
+            <span className="brand-divider" />
+            <span className="brand-subtitle-badge">
+              <Sparkles size={13} />
+              CodeGrade AI
+            </span>
           </div>
         </header>
-        <main className="content-area" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <main className="content-area" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem 1rem' }}>
           {authMode === 'login' ? (
             <LoginForm onSwitchToRegister={() => setAuthMode('register')} />
           ) : (
@@ -104,6 +114,7 @@ export const App: React.FC = () => {
               {activeTab === 'overview' && <StudentOverview onNavigateTab={handleSelectTab} />}
               {activeTab === 'assignments' && <AssignmentList />}
               {activeTab === 'history' && <SubmissionHistory />}
+              {activeTab === 'profile' && <StudentProfile />}
             </>
           ) : (
             <>
@@ -130,4 +141,3 @@ export const App: React.FC = () => {
     </div>
   );
 };
-

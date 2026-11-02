@@ -150,8 +150,8 @@ export const SubmitAssignmentModal: React.FC<SubmitAssignmentModalProps> = ({
           <div
             style={{
               padding: '1.5rem',
-              backgroundColor: 'rgba(16, 185, 129, 0.1)',
-              border: '1px solid var(--success-border)',
+              backgroundColor: 'var(--lime-light)',
+              border: '1px solid var(--lime-border)',
               borderRadius: 'var(--radius-md)',
               textAlign: 'center',
             }}

@@ -18,6 +18,8 @@ import {
   Plus,
   UserPlus,
   ArrowRight,
+  ShieldCheck,
+  CheckCircle2,
 } from 'lucide-react';
 
 interface InstructorOverviewProps {
@@ -75,46 +77,50 @@ export const InstructorOverview: React.FC<InstructorOverviewProps> = ({ onNaviga
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
-      {/* Instructor Welcome Banner */}
+      {/* Instructor Welcome Banner (Clean Akiba SaaS Styling) */}
       <div
         style={{
-          background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.15))',
+          backgroundColor: '#ffffff',
           border: '1px solid var(--border-color)',
+          borderLeft: '4px solid var(--primary)',
           borderRadius: 'var(--radius-lg)',
           padding: '1.75rem 2rem',
           display: 'flex',
           flexWrap: 'wrap',
           alignItems: 'center',
           justifyContent: 'space-between',
-          gap: '1.25rem',
+          gap: '1.5rem',
+          boxShadow: 'var(--shadow-sm)',
         }}
       >
         <div>
-          <span
-            style={{
-              fontSize: '0.8rem',
-              fontWeight: 600,
-              color: '#c084fc',
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em',
-            }}
-          >
-            Instructor Administration Portal
-          </span>
-          <h1 style={{ fontSize: '1.65rem', fontWeight: 700, color: 'var(--text-main)', marginTop: '0.2rem' }}>
-            Course Overview: {user?.name || 'Instructor'}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem' }}>
+            <span
+              style={{
+                fontSize: '0.75rem',
+                fontWeight: 700,
+                color: 'var(--primary)',
+                textTransform: 'uppercase',
+                letterSpacing: '0.06em',
+              }}
+            >
+              Akiba Technologies &bull; Academic Management Suite
+            </span>
+          </div>
+          <h1 style={{ fontSize: '1.65rem', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.02em' }}>
+            Course Leadership: {user?.name || 'Prof. Turing'}
           </h1>
-          <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', maxWidth: '580px', marginTop: '0.35rem' }}>
-            Automate programming assignment verification, inspect deterministic sandbox results, review Google Gemini AI feedback, and override student grades.
+          <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', maxWidth: '620px', marginTop: '0.35rem' }}>
+            Configure programming assignments and test cases, monitor live submissions, inspect Gemini AI pedagogical reviews, and perform deterministic grade overrides.
           </p>
         </div>
 
         <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-          <button onClick={() => onNavigateTab('assignments')} className="btn btn-primary" style={{ gap: '0.4rem' }}>
+          <button onClick={() => onNavigateTab('assignments')} className="btn btn-primary" style={{ gap: '0.45rem' }}>
             <Plus size={16} /> New Assignment
           </button>
-          <button onClick={() => onNavigateTab('students')} className="btn btn-outline" style={{ gap: '0.4rem' }}>
-            <UserPlus size={16} /> Enroll Student
+          <button onClick={() => onNavigateTab('students')} className="btn btn-secondary" style={{ gap: '0.45rem' }}>
+            <UserPlus size={16} /> Student Directory
           </button>
         </div>
       </div>
@@ -140,110 +146,162 @@ export const InstructorOverview: React.FC<InstructorOverviewProps> = ({ onNaviga
               subtitle="Active programming tasks"
             />
             <MetricCard
-              label="Evaluations Complete"
-              value={completedEvals.length}
+              label="Evaluations Run"
+              value={evaluations.length}
               icon={<FileCheck2 size={24} />}
-              subtitle="Deterministic test passes"
+              subtitle="Automated & reviewed runs"
             />
             <MetricCard
-              label="Class Average"
+              label="Course Average"
               value={`${avgScore}%`}
               icon={<TrendingUp size={24} />}
-              subtitle="Mean student score"
-              trend={{ value: avgScore >= 70 ? 'Satisfactory' : 'Needs attention', isPositive: avgScore >= 70 }}
+              subtitle="Average grade performance"
             />
           </div>
 
-          {/* Recent Evaluations Queue */}
-          <div className="card">
-            <div className="card-header">
-              <div>
-                <h3 className="card-title">Recent Submissions Queue</h3>
-                <p className="card-subtitle">Latest evaluated submissions requiring review</p>
+          {/* Quick Monitoring & Review Section */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '1.5rem' }}>
+            {/* Recent Evaluations Queue */}
+            <div className="card">
+              <div className="card-header">
+                <div>
+                  <h3 className="card-title">Recent Student Evaluations</h3>
+                  <p className="card-subtitle">Review deterministic results & AI comments</p>
+                </div>
+                <button
+                  onClick={() => onNavigateTab('monitoring')}
+                  className="btn btn-outline btn-sm"
+                  style={{ gap: '0.3rem' }}
+                >
+                  All Submissions <ArrowRight size={14} />
+                </button>
               </div>
-              <button
-                onClick={() => onNavigateTab('monitoring')}
-                className="btn btn-outline btn-sm"
-                style={{ border: 'none', color: 'var(--primary)' }}
-              >
-                View All Submissions <ArrowRight size={14} style={{ marginLeft: '4px' }} />
-              </button>
-            </div>
 
-            {evaluations.length === 0 ? (
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', padding: '1rem 0' }}>
-                No submissions have been evaluated yet.
-              </p>
-            ) : (
-              <div className="table-container">
-                <table className="custom-table">
-                  <thead>
-                    <tr>
-                      <th>Submission / Eval ID</th>
-                      <th>Student</th>
-                      <th>Task</th>
-                      <th>Score</th>
-                      <th>Status</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {evaluations.slice(0, 5).map((ev) => {
-                      const isOverridden = ev.manual_override_score !== null && ev.manual_override_score !== undefined;
-                      const finalScore = isOverridden ? ev.manual_override_score : ev.deterministic_score;
-
-                      return (
-                        <tr key={ev.evaluation_id}>
-                          <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.85rem' }}>
-                            {ev.evaluation_id}
-                          </td>
-                          <td>
-                            <strong>{ev.student_id}</strong>
-                          </td>
-                          <td>{ev.task_id}</td>
-                          <td>
-                            <strong style={{ color: 'var(--text-main)' }}>
-                              {finalScore} / {ev.max_score}
+              {evaluations.length === 0 ? (
+                <div className="empty-state" style={{ padding: '2rem 1rem' }}>
+                  <FileCheck2 className="empty-state-icon" />
+                  <h4 className="empty-state-title">No evaluations processed yet</h4>
+                  <p className="empty-state-desc">
+                    When students submit code, evaluation reports with test logs and Gemini AI reviews appear here.
+                  </p>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  {evaluations.slice(0, 5).map((ev) => {
+                    const finalScore = ev.manual_override_score ?? ev.deterministic_score;
+                    return (
+                      <div
+                        key={ev.evaluation_id}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          padding: '0.85rem 1rem',
+                          backgroundColor: '#f8fafc',
+                          borderRadius: 'var(--radius-md)',
+                          border: '1px solid var(--border-color)',
+                        }}
+                      >
+                        <div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <strong style={{ fontSize: '0.9rem', color: 'var(--text-main)' }}>
+                              {ev.student_id}
                             </strong>
-                            {isOverridden && (
-                              <Badge variant="purple" style={{ marginLeft: '6px' }}>
-                                Adjusted
-                              </Badge>
-                            )}
-                          </td>
-                          <td>
                             <Badge variant={ev.status === 'completed' ? 'success' : 'warning'}>
                               {ev.status}
                             </Badge>
-                          </td>
-                          <td>
-                            <div style={{ display: 'flex', gap: '0.4rem' }}>
-                              <button
-                                onClick={() => setSelectedReport(ev)}
-                                className="btn btn-outline btn-sm"
-                                style={{ gap: '0.25rem' }}
-                              >
-                                <Eye size={12} /> View
-                              </button>
-                              <button
-                                onClick={() => {
-                                  setSelectedEvaluation(ev);
-                                  setIsReviewOpen(true);
-                                }}
-                                className="btn btn-secondary btn-sm"
-                                style={{ gap: '0.25rem' }}
-                              >
-                                <Award size={12} /> Review
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+                          </div>
+                          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                            Task: {ev.task_id} &bull; Score:{' '}
+                            <strong style={{ color: 'var(--primary)' }}>
+                              {finalScore}/{ev.max_score}
+                            </strong>
+                          </span>
+                        </div>
+
+                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                          <button
+                            onClick={() => setSelectedReport(ev)}
+                            className="btn btn-outline btn-sm"
+                            title="Inspect Detailed Report"
+                            style={{ padding: '0.3rem 0.6rem' }}
+                          >
+                            <Eye size={14} />
+                          </button>
+                          <button
+                            onClick={() => {
+                              setSelectedEvaluation(ev);
+                              setIsReviewOpen(true);
+                            }}
+                            className="btn btn-primary btn-sm"
+                            title="Manual Review / Grade Override"
+                            style={{ padding: '0.3rem 0.6rem', gap: '0.3rem' }}
+                          >
+                            <Award size={14} /> Review
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* Course Assignments Roster */}
+            <div className="card">
+              <div className="card-header">
+                <div>
+                  <h3 className="card-title">Managed Assignments</h3>
+                  <p className="card-subtitle">Test case counts & scoring rubrics</p>
+                </div>
+                <button
+                  onClick={() => onNavigateTab('assignments')}
+                  className="btn btn-outline btn-sm"
+                  style={{ gap: '0.3rem' }}
+                >
+                  Manage <ArrowRight size={14} />
+                </button>
               </div>
-            )}
+
+              {assignments.length === 0 ? (
+                <div className="empty-state" style={{ padding: '2rem 1rem' }}>
+                  <BookOpen className="empty-state-icon" />
+                  <h4 className="empty-state-title">No assignments created</h4>
+                  <p className="empty-state-desc">Create your first assignment with automated test cases.</p>
+                  <button onClick={() => onNavigateTab('assignments')} className="btn btn-primary btn-sm">
+                    Create Assignment
+                  </button>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  {assignments.slice(0, 5).map((asgn) => (
+                    <div
+                      key={asgn.task_id}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        padding: '0.85rem 1rem',
+                        backgroundColor: '#f8fafc',
+                        borderRadius: 'var(--radius-md)',
+                        border: '1px solid var(--border-color)',
+                      }}
+                    >
+                      <div>
+                        <strong style={{ fontSize: '0.9rem', color: 'var(--text-main)', display: 'block' }}>
+                          {asgn.title || asgn.task_id}
+                        </strong>
+                        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                          ID: <span style={{ fontFamily: 'var(--font-mono)' }}>{asgn.task_id}</span> &bull; {asgn.test_cases?.length || 0} Test Cases
+                        </span>
+                      </div>
+
+                      <Badge variant="purple">{asgn.max_score} pts</Badge>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </>
       )}
@@ -253,19 +311,23 @@ export const InstructorOverview: React.FC<InstructorOverviewProps> = ({ onNaviga
         isOpen={isReviewOpen}
         onClose={() => setIsReviewOpen(false)}
         evaluation={selectedEvaluation}
-        onReviewSaved={fetchOverviewData}
+        onReviewSaved={() => {
+          fetchOverviewData();
+          setIsReviewOpen(false);
+        }}
       />
 
-      {/* Report Modal */}
-      <Modal
-        isOpen={!!selectedReport}
-        onClose={() => setSelectedReport(null)}
-        title="Student Evaluation Audit"
-        size="large"
-      >
-        {selectedReport && <EvaluationDetailView report={selectedReport} />}
-      </Modal>
+      {/* Detailed Evaluation Report Modal */}
+      {selectedReport && (
+        <Modal
+          isOpen={true}
+          onClose={() => setSelectedReport(null)}
+          title={`Evaluation Report: ${selectedReport.task_id} (${selectedReport.student_id})`}
+          size="large"
+        >
+          <EvaluationDetailView report={selectedReport} />
+        </Modal>
+      )}
     </div>
   );
 };
-

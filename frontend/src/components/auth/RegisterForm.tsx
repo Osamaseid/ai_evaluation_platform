@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { UserRole } from '../../types/api';
-import { Code2, Lock, User, Mail, Shield, GraduationCap } from 'lucide-react';
+import { Lock, User, Mail, Shield, GraduationCap } from 'lucide-react';
 
 interface RegisterFormProps {
   onSwitchToLogin: () => void;
@@ -35,49 +34,39 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) =
   return (
     <div
       style={{
-        maxWidth: '460px',
+        maxWidth: '470px',
         width: '100%',
-        margin: '2.5rem auto',
-        padding: '2rem',
-        backgroundColor: 'var(--bg-card)',
-        borderRadius: 'var(--radius-lg)',
+        margin: '2rem auto',
+        padding: '2.25rem',
+        backgroundColor: '#ffffff',
+        borderRadius: 'var(--radius-xl)',
         border: '1px solid var(--border-color)',
-        boxShadow: 'var(--shadow-lg)',
+        boxShadow: 'var(--shadow-card)',
       }}
     >
       <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-        <div
-          style={{
-            width: '44px',
-            height: '44px',
-            background: 'linear-gradient(135deg, var(--primary), var(--ai-purple))',
-            borderRadius: 'var(--radius-md)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: 'white',
-            margin: '0 auto 0.75rem auto',
-          }}
-        >
-          <Code2 size={24} />
-        </div>
-        <h2 style={{ fontSize: '1.35rem', fontWeight: 700, color: 'var(--text-main)' }}>
-          Create an Account
+        <img
+          src="/brand/akiba-logo.png"
+          alt="Akiba Technologies"
+          style={{ height: '40px', width: 'auto', objectFit: 'contain', margin: '0 auto 1rem auto' }}
+        />
+        <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.02em' }}>
+          Create an Akiba Account
         </h2>
-        <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+        <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
           Join the Automated Programming Assignment Evaluation Platform
         </p>
       </div>
 
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
         {/* Role Selector Pill */}
-        <div className="form-group" style={{ marginBottom: '0.5rem' }}>
+        <div className="form-group" style={{ marginBottom: '0.25rem' }}>
           <label className="form-label">I am registering as:</label>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
             <button
               type="button"
               onClick={() => setRole('student')}
-              className={`btn btn-sm ${role === 'student' ? 'btn-primary' : 'btn-outline'}`}
+              className={`btn btn-sm ${role === 'student' ? 'btn-primary' : 'btn-secondary'}`}
               style={{ gap: '0.35rem' }}
             >
               <GraduationCap size={16} /> Student
@@ -85,7 +74,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) =
             <button
               type="button"
               onClick={() => setRole('instructor')}
-              className={`btn btn-sm ${role === 'instructor' ? 'btn-primary' : 'btn-outline'}`}
+              className={`btn btn-sm ${role === 'instructor' ? 'btn-primary' : 'btn-secondary'}`}
               style={{ gap: '0.35rem' }}
             >
               <Shield size={16} /> Instructor
@@ -96,7 +85,11 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) =
         <div className="form-group">
           <label className="form-label">User ID *</label>
           <div style={{ position: 'relative' }}>
-            <User size={16} color="var(--text-dim)" style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)' }} />
+            <User
+              size={16}
+              color="var(--text-dim)"
+              style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)' }}
+            />
             <input
               type="text"
               placeholder="e.g. ada_lovelace"
@@ -124,7 +117,11 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) =
         <div className="form-group">
           <label className="form-label">Email Address *</label>
           <div style={{ position: 'relative' }}>
-            <Mail size={16} color="var(--text-dim)" style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)' }} />
+            <Mail
+              size={16}
+              color="var(--text-dim)"
+              style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)' }}
+            />
             <input
               type="email"
               placeholder="e.g. ada@university.edu"
@@ -138,24 +135,32 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) =
         </div>
 
         <div className="form-group">
-          <label className="form-label">Password * (Min 6 characters)</label>
+          <label className="form-label">Password *</label>
           <div style={{ position: 'relative' }}>
-            <Lock size={16} color="var(--text-dim)" style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)' }} />
+            <Lock
+              size={16}
+              color="var(--text-dim)"
+              style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)' }}
+            />
             <input
               type="password"
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              minLength={6}
               className="form-input"
               style={{ paddingLeft: '2.4rem' }}
             />
           </div>
         </div>
 
-        <button type="submit" disabled={isLoading} className="btn btn-primary" style={{ padding: '0.75rem', marginTop: '0.5rem' }}>
-          {isLoading ? 'Creating Account...' : 'Complete Registration'}
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="btn btn-primary"
+          style={{ padding: '0.75rem', marginTop: '0.5rem' }}
+        >
+          {isLoading ? 'Registering...' : 'Register Account'}
         </button>
 
         <p style={{ textAlign: 'center', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
@@ -163,7 +168,13 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) =
           <button
             type="button"
             onClick={onSwitchToLogin}
-            style={{ background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer', fontWeight: 600 }}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: 'var(--primary)',
+              cursor: 'pointer',
+              fontWeight: 700,
+            }}
           >
             Sign in
           </button>
@@ -172,4 +183,3 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) =
     </div>
   );
 };
-
