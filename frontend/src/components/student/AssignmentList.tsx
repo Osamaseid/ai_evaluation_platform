@@ -9,10 +9,8 @@ import {
   BookOpen,
   Search,
   UploadCloud,
-  CheckCircle2,
   Calendar,
   Layers,
-  ArrowRight,
 } from 'lucide-react';
 
 interface AssignmentListProps {

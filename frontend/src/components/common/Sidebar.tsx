@@ -12,12 +12,11 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 
-export type StudentTab = 'overview' | 'assignments' | 'submit' | 'history' | 'profile';
+export type StudentTab = 'overview' | 'assignments' | 'history' | 'profile';
 export type InstructorTab =
   | 'overview'
   | 'students'
   | 'assignments'
-  | 'rubrics'
   | 'monitoring'
   | 'analytics';
 
@@ -39,7 +38,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const studentNavItems = [
     { id: 'overview', label: 'Student Overview', icon: <LayoutDashboard size={18} /> },
     { id: 'assignments', label: 'Available Assignments', icon: <BookOpen size={18} /> },
-    { id: 'submit', label: 'Submit Assignment', icon: <UploadCloud size={18} /> },
     { id: 'history', label: 'Submission History', icon: <History size={18} /> },
     { id: 'profile', label: 'Student Profile', icon: <UserCheck size={18} /> },
   ];
@@ -47,8 +45,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const instructorNavItems = [
     { id: 'overview', label: 'Analytics Overview', icon: <LayoutDashboard size={18} /> },
     { id: 'students', label: 'Student Directory', icon: <Users size={18} /> },
-    { id: 'assignments', label: 'Assignments & Tests', icon: <BookOpen size={18} /> },
-    { id: 'rubrics', label: 'Grading Rubrics', icon: <Sliders size={18} /> },
+    { id: 'assignments', label: 'Assignments & Rubrics', icon: <BookOpen size={18} /> },
     { id: 'monitoring', label: 'Submissions & Review', icon: <FileCheck2 size={18} /> },
     { id: 'analytics', label: 'Performance Stats', icon: <BarChart3 size={18} /> },
   ];

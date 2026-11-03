@@ -131,7 +131,6 @@ export const App: React.FC = () => {
               {activeTab === 'overview' && <InstructorOverview onNavigateTab={handleSelectTab} />}
               {activeTab === 'students' && <StudentManagement />}
               {activeTab === 'assignments' && <AssignmentManagement />}
-              {activeTab === 'rubrics' && <AssignmentManagement />}
               {activeTab === 'monitoring' && <SubmissionMonitoring />}
               {activeTab === 'analytics' && <ClassPerformanceStats />}
             </>
