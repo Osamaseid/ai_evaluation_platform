@@ -54,6 +54,22 @@ def get_orchestrator() -> EvaluationOrchestrator:
 
 
 def _to_response_schema(report: EvaluationReport) -> EvaluationReportResponse:
+    submission = shared_submission_store.get(report.submission_id) if report.submission_id else None
+    student_id = submission.metadata.student_id if submission else None
+    task_id = submission.metadata.task_id if submission else None
+
+    test_schemas = [
+        TestCaseResultSchema(
+            test_case_id=tr.test_case_id,
+            passed=tr.passed,
+            message=tr.message,
+            execution_time_ms=getattr(tr, "execution_time_ms", 12),
+            stdout=getattr(tr, "stdout", None),
+            stderr=getattr(tr, "stderr", None),
+        )
+        for tr in report.test_results
+    ]
+
     grading_schema = None
     if report.grading_report:
         grading_schema = GradingReportSchema(
@@ -62,16 +78,9 @@ def _to_response_schema(report: EvaluationReport) -> EvaluationReportResponse:
             passed_tests=report.grading_report.passed_tests,
             total_tests=report.grading_report.total_tests,
             percentage=report.grading_report.percentage,
+            score_percentage=report.grading_report.percentage,
+            test_case_results=test_schemas,
         )
-
-    test_schemas = [
-        TestCaseResultSchema(
-            test_case_id=tr.test_case_id,
-            passed=tr.passed,
-            message=tr.message,
-        )
-        for tr in report.test_results
-    ]
 
     rubric_schemas = [
         RubricEvaluationSchema(
@@ -82,16 +91,34 @@ def _to_response_schema(report: EvaluationReport) -> EvaluationReportResponse:
         for re in report.rubric_evaluations
     ]
 
+    ai_payload = report.structured_feedback or report.ai_review
+    if hasattr(ai_payload, "model_dump"):
+        ai_payload = ai_payload.model_dump()
+    elif hasattr(ai_payload, "dict"):
+        ai_payload = ai_payload.dict()
+    elif isinstance(ai_payload, str):
+        ai_payload = {"summary": ai_payload, "strengths": [], "weaknesses": [], "observations": []}
+
     return EvaluationReportResponse(
         evaluation_id=report.evaluation_id,
         submission_id=report.submission_id,
+        student_id=student_id,
+        task_id=task_id,
         status=report.status.value,
+        deterministic_score=report.grading_report.earned_points if report.grading_report else 0,
+        max_score=report.grading_report.max_score if report.grading_report else 100,
         grading_report=grading_schema,
         test_results=test_schemas,
         rubric_evaluations=rubric_schemas,
-        ai_review=report.ai_review,
+        ai_review=ai_payload,
         error_message=report.error_message,
         evaluated_at=report.evaluated_at,
+        manual_override_score=report.manual_override_score,
+        instructor_notes=report.instructor_notes,
+        reviewed_by=report.reviewed_by,
+        reviewed_at=report.reviewed_at,
+        started_at=report.evaluated_at,
+        completed_at=report.evaluated_at,
     )
 
 

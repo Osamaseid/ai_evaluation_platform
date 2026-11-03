@@ -31,9 +31,14 @@ export const SubmissionHistory: React.FC = () => {
   const [isEvaluationLoading, setIsEvaluationLoading] = useState(false);
   const [evaluatingSubId, setEvaluatingSubId] = useState<string | null>(null);
 
-  const studentId = user?.user_id || 'student_ada';
+  const studentId = user?.user_id;
 
   const fetchHistory = useCallback(async () => {
+    if (!studentId || user?.role !== 'student') {
+      setIsLoading(false);
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
     try {
@@ -44,7 +49,7 @@ export const SubmissionHistory: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [studentId]);
+  }, [studentId, user?.role]);
 
   useEffect(() => {
     fetchHistory();

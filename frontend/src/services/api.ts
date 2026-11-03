@@ -276,24 +276,57 @@ class ApiClient {
     return this.request<GradingRubric>(`/instructors/rubrics/${encodeURIComponent(taskId)}`);
   }
 
-  async listInstructorEvaluations(taskId?: string): Promise<EvaluationReport[]> {
-    const query = taskId ? `?task_id=${encodeURIComponent(taskId)}` : '';
-    return this.request<EvaluationReport[]>(`/instructors/evaluations${query}`);
+  async listInstructorEvaluations(taskId?: string, limit = 100, offset = 0): Promise<EvaluationReport[]> {
+    const params = new URLSearchParams();
+    if (taskId) params.append('task_id', taskId);
+    params.append('limit', String(limit));
+    params.append('offset', String(offset));
+    const res = await this.request<any>(`/instructors/evaluations?${params.toString()}`);
+    if (Array.isArray(res)) {
+      return res;
+    }
+    if (res && Array.isArray(res.items)) {
+      return res.items;
+    }
+    return [];
   }
 
   async applyManualReview(
     evaluationId: string,
     payload: {
+      override_score?: number | null;
       manual_override_score?: number | null;
       instructor_notes?: string | null;
-      rubric_evaluations?: Record<string, { criterion_id: string; score: number; comment: string }> | null;
+      rubric_evaluations?: any;
     }
   ): Promise<{ message: string; evaluation_id: string; final_score: number }> {
+    const override = payload.override_score !== undefined ? payload.override_score : payload.manual_override_score;
+    let rubricList: Array<{ criterion_id: string; score: number; feedback?: string }> = [];
+    if (Array.isArray(payload.rubric_evaluations)) {
+      rubricList = payload.rubric_evaluations.map((r: any) => ({
+        criterion_id: r.criterion_id,
+        score: Number(r.score),
+        feedback: r.feedback || r.comment || '',
+      }));
+    } else if (payload.rubric_evaluations && typeof payload.rubric_evaluations === 'object') {
+      rubricList = Object.values(payload.rubric_evaluations).map((r: any) => ({
+        criterion_id: r.criterion_id,
+        score: Number(r.score),
+        feedback: r.feedback || r.comment || '',
+      }));
+    }
+
+    const body = {
+      override_score: override !== undefined && override !== null ? Math.round(Number(override)) : null,
+      instructor_notes: payload.instructor_notes || null,
+      rubric_evaluations: rubricList,
+    };
+
     return this.request<{ message: string; evaluation_id: string; final_score: number }>(
       `/instructors/evaluations/${encodeURIComponent(evaluationId)}/manual-review`,
       {
         method: 'POST',
-        body: JSON.stringify(payload),
+        body: JSON.stringify(body),
       }
     );
   }

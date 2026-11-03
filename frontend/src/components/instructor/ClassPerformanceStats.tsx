@@ -1,17 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { EvaluationReport } from '../../types/api';
 import { api } from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
 import { MetricCard } from '../common/MetricCard';
 import { ProgressBar } from '../common/ProgressBar';
 import { LoadingSpinner, ErrorAlert, EmptyState } from '../common/FeedbackStates';
 import { BarChart3, TrendingUp, Award, CheckCircle2, XCircle } from 'lucide-react';
 
 export const ClassPerformanceStats: React.FC = () => {
+  const { user } = useAuth();
   const [evaluations, setEvaluations] = useState<EvaluationReport[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!user || (user.role !== 'instructor' && user.role !== 'admin')) {
+      setIsLoading(false);
+      return;
+    }
     const fetchStats = async () => {
       setIsLoading(true);
       setError(null);
@@ -25,7 +31,7 @@ export const ClassPerformanceStats: React.FC = () => {
       }
     };
     fetchStats();
-  }, []);
+  }, [user]);
 
   // Compute metrics
   const completed = evaluations.filter((e) => e.status === 'completed');

@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Student } from '../../types/api';
 import { api } from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { Modal } from '../common/Modal';
 import { LoadingSpinner, ErrorAlert, EmptyState } from '../common/FeedbackStates';
 import { Users, UserPlus, Mail, RotateCw, Calendar } from 'lucide-react';
 
 export const StudentManagement: React.FC = () => {
+  const { user } = useAuth();
   const { success, error: showError } = useToast();
   const [students, setStudents] = useState<Student[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -20,6 +22,10 @@ export const StudentManagement: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const fetchStudents = useCallback(async () => {
+    if (!user || (user.role !== 'instructor' && user.role !== 'admin')) {
+      setIsLoading(false);
+      return;
+    }
     setIsLoading(true);
     setError(null);
     try {
@@ -30,7 +36,7 @@ export const StudentManagement: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     fetchStudents();

@@ -4,6 +4,7 @@ import { Navbar } from './components/common/Navbar';
 import { Sidebar } from './components/common/Sidebar';
 import { LoginForm } from './components/auth/LoginForm';
 import { RegisterForm } from './components/auth/RegisterForm';
+import { LoadingSpinner } from './components/common/FeedbackStates';
 import { StudentOverview } from './components/student/StudentOverview';
 import { AssignmentList } from './components/student/AssignmentList';
 import { SubmissionHistory } from './components/student/SubmissionHistory';
@@ -19,7 +20,7 @@ import { Sparkles } from 'lucide-react';
 export const App: React.FC = () => {
   const { user, isAuthenticated, isLoading } = useAuth();
 
-  // Active view role ('student' or 'instructor')
+  // Active view role ('student' | 'instructor')
   const [roleView, setRoleView] = useState<'student' | 'instructor'>(() => {
     return user?.role === 'instructor' ? 'instructor' : 'student';
   });
@@ -43,7 +44,7 @@ export const App: React.FC = () => {
     } else if (user?.role === 'student') {
       setRoleView('student');
     }
-  }, [user]);
+  }, [user?.role]);
 
   // Tab selection handler
   const handleSelectTab = (tab: string) => {
@@ -59,8 +60,17 @@ export const App: React.FC = () => {
     setActiveTab('overview');
   };
 
+  // Loading screen while initial auth verification is in progress
+  if (isLoading) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg-primary)' }}>
+        <LoadingSpinner message="Loading Akiba Technologies Platform..." />
+      </div>
+    );
+  }
+
   // Unauthenticated screen
-  if (!isAuthenticated && !isLoading) {
+  if (!isAuthenticated || !user) {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--bg-primary)' }}>
         <header className="navbar" style={{ justifyContent: 'center' }}>

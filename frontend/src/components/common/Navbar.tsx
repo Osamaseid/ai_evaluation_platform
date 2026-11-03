@@ -21,11 +21,18 @@ export const Navbar: React.FC<NavbarProps> = ({
   onSwitchRoleView,
 }) => {
   const { user, logout, quickLogin } = useAuth();
+  const [isSwitching, setIsSwitching] = React.useState(false);
 
   const handleRoleSwitch = async (targetRole: 'student' | 'instructor') => {
-    onSwitchRoleView(targetRole);
-    if (user?.role !== targetRole) {
-      await quickLogin(targetRole);
+    if (isSwitching) return;
+    setIsSwitching(true);
+    try {
+      if (user?.role !== targetRole) {
+        await quickLogin(targetRole);
+      }
+      onSwitchRoleView(targetRole);
+    } finally {
+      setIsSwitching(false);
     }
   };
 

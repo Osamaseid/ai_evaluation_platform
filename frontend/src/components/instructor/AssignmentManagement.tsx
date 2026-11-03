@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Assignment } from '../../types/api';
 import { api } from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
 import { Badge } from '../common/Badge';
 import { LoadingSpinner, ErrorAlert, EmptyState } from '../common/FeedbackStates';
 import { AssignmentCreateEditModal } from './AssignmentCreateEditModal';
@@ -16,6 +17,7 @@ import {
 } from 'lucide-react';
 
 export const AssignmentManagement: React.FC = () => {
+  const { user } = useAuth();
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -27,6 +29,10 @@ export const AssignmentManagement: React.FC = () => {
   const [rubricAssignment, setRubricAssignment] = useState<Assignment | null>(null);
 
   const fetchAssignments = useCallback(async () => {
+    if (!user || (user.role !== 'instructor' && user.role !== 'admin')) {
+      setIsLoading(false);
+      return;
+    }
     setIsLoading(true);
     setError(null);
     try {
@@ -37,7 +43,7 @@ export const AssignmentManagement: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     fetchAssignments();

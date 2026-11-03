@@ -35,9 +35,14 @@ export const StudentOverview: React.FC<StudentOverviewProps> = ({ onNavigateTab 
   // Modal report view
   const [selectedReport, setSelectedReport] = useState<EvaluationReport | null>(null);
 
-  const studentId = user?.user_id || 'student_ada';
+  const studentId = user?.user_id;
 
   useEffect(() => {
+    if (!studentId || user?.role !== 'student') {
+      setIsLoading(false);
+      return;
+    }
+
     const loadOverviewData = async () => {
       setIsLoading(true);
       setError(null);
@@ -59,7 +64,7 @@ export const StudentOverview: React.FC<StudentOverviewProps> = ({ onNavigateTab 
     };
 
     loadOverviewData();
-  }, [studentId]);
+  }, [studentId, user?.role]);
 
   // Derived metrics
   const totalSubmissions = submissions.length;

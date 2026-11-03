@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Assignment, EvaluationReport, Submission } from '../../types/api';
 import { api } from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { Badge } from '../common/Badge';
 import { Modal } from '../common/Modal';
@@ -19,6 +20,7 @@ import {
 } from 'lucide-react';
 
 export const SubmissionMonitoring: React.FC = () => {
+  const { user } = useAuth();
   const { success, error: showError, info } = useToast();
   const [evaluations, setEvaluations] = useState<EvaluationReport[]>([]);
   const [assignments, setAssignments] = useState<Assignment[]>([]);
@@ -35,6 +37,10 @@ export const SubmissionMonitoring: React.FC = () => {
   const [reportEvaluation, setReportEvaluation] = useState<EvaluationReport | null>(null);
 
   const fetchMonitoringData = useCallback(async () => {
+    if (!user || (user.role !== 'instructor' && user.role !== 'admin')) {
+      setIsLoading(false);
+      return;
+    }
     setIsLoading(true);
     setError(null);
     try {
@@ -49,7 +55,7 @@ export const SubmissionMonitoring: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [taskFilter]);
+  }, [taskFilter, user]);
 
   useEffect(() => {
     fetchMonitoringData();

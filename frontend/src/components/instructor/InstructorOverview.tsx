@@ -40,6 +40,10 @@ export const InstructorOverview: React.FC<InstructorOverviewProps> = ({ onNaviga
   const [selectedReport, setSelectedReport] = useState<EvaluationReport | null>(null);
 
   const fetchOverviewData = async () => {
+    if (!user || (user.role !== 'instructor' && user.role !== 'admin')) {
+      setIsLoading(false);
+      return;
+    }
     setIsLoading(true);
     setError(null);
     try {
@@ -61,7 +65,7 @@ export const InstructorOverview: React.FC<InstructorOverviewProps> = ({ onNaviga
 
   useEffect(() => {
     fetchOverviewData();
-  }, []);
+  }, [user?.role]);
 
   const completedEvals = evaluations.filter((e) => e.status === 'completed');
   const avgScore =

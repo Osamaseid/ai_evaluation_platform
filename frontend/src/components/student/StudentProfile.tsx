@@ -29,9 +29,14 @@ export const StudentProfile: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [selectedReport, setSelectedReport] = useState<EvaluationReport | null>(null);
 
-  const studentId = user?.user_id || 'student_ada';
+  const studentId = user?.user_id;
 
   useEffect(() => {
+    if (!studentId || user?.role !== 'student') {
+      setIsLoading(false);
+      return;
+    }
+
     const fetchProfileData = async () => {
       setIsLoading(true);
       setError(null);
@@ -46,7 +51,7 @@ export const StudentProfile: React.FC = () => {
     };
 
     fetchProfileData();
-  }, [studentId]);
+  }, [studentId, user?.role]);
 
   const completedEvals = evaluations.filter((e) => e.status === 'completed');
   const avgScore =
