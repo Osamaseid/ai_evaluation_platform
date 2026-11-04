@@ -320,3 +320,4 @@ pnpm --dir frontend run test
 
 Copyright &copy; 2026 **Akiba Technologies**. All rights reserved.  
 Proprietary software for academic and commercial educational evaluation.
+
